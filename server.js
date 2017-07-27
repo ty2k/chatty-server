@@ -21,10 +21,9 @@ const uuidv4 = require('uuid/v4');
 
 // Takes an incoming message, ignores its id from client, gives new id from uuidv4()
 const sendMessage = function(message) {
-  let newId = uuidv4();
   let returnMessage = {
     type: "incomingMessage",
-    id: newId,
+    id: uuidv4(),
     username: message.username,
     content: message.content
   }
@@ -37,8 +36,12 @@ const sendMessage = function(message) {
 const sendNotification = function(notification) {
   let returnNotification = {
     type: "incomingNotification",
+    id: uuidv4(),
     content: notification.content
   }
+  console.log("Here's the returnNotification: ");
+  console.log(returnNotification);
+  return returnNotification;
 };
 
 // Set up a callback that will run when a client connects to the server
@@ -46,17 +49,38 @@ const sendNotification = function(notification) {
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
   console.log('Client connected');
-  ws.on('message', function incoming(message) {
-    let receivedMessage = JSON.parse(message);
-    console.log("Received a message: ");
-    console.log(receivedMessage);
-    let data = JSON.stringify(sendMessage(receivedMessage));
-    // Broast the new message to all clients
-    wss.clients.forEach(function each(client) {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(data);
-      }
-    });
+  ws.on('message', function incoming(event) {
+    let data = JSON.parse(event);
+    // Check the data type and switch based on it
+    switch(data.type) {
+      case "postMessage":
+        let receivedMessage = JSON.parse(event);
+          console.log("Received a message: ");
+          console.log(receivedMessage);
+          let preparedMessage = JSON.stringify(sendMessage(receivedMessage));
+          // Broast the new message to all clients
+          wss.clients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(preparedMessage);
+            }
+          });
+        break;
+      case "postNotification":
+        let receivedNotification = JSON.parse(event);
+          console.log("Received a notification: ");
+          console.log(receivedNotification);
+          let preparedNotification = JSON.stringify(sendNotification(receivedNotification));
+          // Broast the new message to all clients
+          wss.clients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(preparedNotification);
+            }
+          });
+        break;
+      default:
+        // If message type is unknown, throw error
+        throw new Error("Unknown event type " + data.type);
+    }
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
