@@ -1,7 +1,8 @@
 // server.js
 
 const express = require('express');
-const SocketServer = require('ws').Server;
+const WebSocket = require('ws');
+const SocketServer = WebSocket.Server;
 
 // Set the port to 3001
 const PORT = 3001;
@@ -40,7 +41,13 @@ wss.on('connection', (ws) => {
     let receivedMessage = JSON.parse(message);
     console.log("Received a message: ");
     console.log(receivedMessage);
-    ws.send(JSON.stringify(sendMessage(receivedMessage)));
+    let data = JSON.stringify(sendMessage(receivedMessage));
+    // Broast the new message to all clients
+    wss.clients.forEach(function each(client) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(data);
+      }
+    });
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
