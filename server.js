@@ -79,27 +79,27 @@ wss.on('connection', (ws) => {
     switch(data.type) {
       case "postMessage":
         let receivedMessage = JSON.parse(event);
-          console.log("Received a message: ");
-          console.log(receivedMessage);
-          let preparedMessage = JSON.stringify(sendMessage(receivedMessage));
-          // Broast the new message to all clients
-          wss.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(preparedMessage);
-            }
-          });
+        console.log("Received a message: ");
+        console.log(receivedMessage);
+        let preparedMessage = JSON.stringify(sendMessage(receivedMessage));
+        // Broast the new message to all clients
+        wss.clients.forEach(function each(client) {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(preparedMessage);
+          }
+        });
         break;
       case "postNotification":
         let receivedNotification = JSON.parse(event);
-          console.log("Received a notification: ");
-          console.log(receivedNotification);
-          let preparedNotification = JSON.stringify(sendNotification(receivedNotification));
-          // Broast the new message to all clients
-          wss.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(preparedNotification);
-            }
-          });
+        console.log("Received a notification: ");
+        console.log(receivedNotification);
+        let preparedNotification = JSON.stringify(sendNotification(receivedNotification));
+        // Broast the new message to all clients
+        wss.clients.forEach(function each(client) {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(preparedNotification);
+          }
+        });
         break;
       default:
         // If message type is unknown, throw error
