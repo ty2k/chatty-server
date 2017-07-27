@@ -15,6 +15,22 @@ const server = express()
 // Create the WebSockets server
 const wss = new SocketServer({ server });
 
+// Use to generate random numbers, like our new message id
+const uuidv4 = require('uuid/v4');
+
+// Takes an incoming message, ignores its id from client, gives new id from uuidv4()
+const sendMessage = function(message) {
+  let newId = uuidv4();
+  let returnMessage = {
+    id: newId,
+    username: message.username,
+    content: message.content
+  }
+  console.log("Here's the returnMessage: ");
+  console.log(returnMessage);
+  return returnMessage;
+};
+
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
@@ -22,8 +38,9 @@ wss.on('connection', (ws) => {
   console.log('Client connected');
   ws.on('message', function incoming(message) {
     let receivedMessage = JSON.parse(message);
+    console.log("Received a message: ");
     console.log(receivedMessage);
-    console.log(`${receivedMessage.username} says "${receivedMessage.content}"`);
+    ws.send(JSON.stringify(sendMessage(receivedMessage)));
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
