@@ -23,6 +23,7 @@ const uuidv4 = require('uuid/v4');
 const sendMessage = function(message) {
   let newId = uuidv4();
   let returnMessage = {
+    type: "incomingMessage",
     id: newId,
     username: message.username,
     content: message.content
