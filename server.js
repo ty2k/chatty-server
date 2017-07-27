@@ -44,11 +44,35 @@ const sendNotification = function(notification) {
   return returnNotification;
 };
 
+const getUserCount = function(count) {
+  let latestUserCount = {
+    type: "userCountUpdate",
+    id: uuidv4(),
+    content: count
+  }
+  return latestUserCount;
+}
+
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
+  const sendUserCount = function(count) {
+    console.log("User count, as wss.clients.size: " );
+    console.log(wss.clients.size);
+    console.log("User count message: ");
+    console.log(getUserCount(wss.clients.size));
+    wss.clients.forEach(function each(client) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(getUserCount(wss.clients.size)));
+      }
+    })
+  }
+
   console.log('Client connected');
+  // Update the user count, given a new connection
+  sendUserCount();
+
   ws.on('message', function incoming(event) {
     let data = JSON.parse(event);
     // Check the data type and switch based on it
@@ -84,5 +108,9 @@ wss.on('connection', (ws) => {
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => {
+    console.log('Client disconnected');
+    //Update the user count, given a closed connection
+    sendUserCount();
+  });
 });
