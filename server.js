@@ -33,6 +33,14 @@ const sendMessage = function(message) {
   return returnMessage;
 };
 
+// Takes a postNotification username change message from client, and changes type
+const sendNotification = function(notification) {
+  let returnNotification = {
+    type: "incomingNotification",
+    content: notification.content
+  }
+};
+
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
