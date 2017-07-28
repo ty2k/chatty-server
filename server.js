@@ -1,10 +1,13 @@
 // server.js
 
+
+///////////////////////////
+//    Server Settings    //
+///////////////////////////
+
 const express = require('express');
 const WebSocket = require('ws');
 const SocketServer = WebSocket.Server;
-
-// Set the port to 3001
 const PORT = 3001;
 
 // Create a new express server
@@ -16,10 +19,16 @@ const server = express()
 // Create the WebSockets server
 const wss = new SocketServer({ server });
 
-// Use to generate random numbers, like our new message id
+
+////////////////////////////
+//    Helper Functions    //
+////////////////////////////
+
+
+// Used to generate random numbers, like our new message id
 const uuidv4 = require('uuid/v4');
 
-// Takes an incoming message, ignores its id from client, gives new id from uuidv4()
+// Takes an incoming message from a client, prepare to send to all clients with new id
 const sendMessage = function(message) {
   let returnMessage = {
     type: "incomingMessage",
@@ -32,7 +41,7 @@ const sendMessage = function(message) {
   return returnMessage;
 };
 
-// Takes a postNotification username change message from client, and changes type
+// Takes a postNotification username change message from a client, prepare to send to all clients
 const sendNotification = function(notification) {
   let returnNotification = {
     type: "incomingNotification",
@@ -44,6 +53,7 @@ const sendNotification = function(notification) {
   return returnNotification;
 };
 
+// Create a latestUserCount message to send upon client socket open or close
 const getUserCount = function(count) {
   let latestUserCount = {
     type: "userCountUpdate",
@@ -53,15 +63,17 @@ const getUserCount = function(count) {
   return latestUserCount;
 }
 
-// Set up a callback that will run when a client connects to the server
+
+////////////////////////////////////////
+//    WebSocket Connection Handler    //
+////////////////////////////////////////
+
+
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
+  // When called, sends a latestUserCount message object to all clients
   const sendUserCount = function(count) {
-    console.log("User count, as wss.clients.size: " );
-    console.log(wss.clients.size);
-    console.log("User count message: ");
-    console.log(getUserCount(wss.clients.size));
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(getUserCount(wss.clients.size)));
@@ -73,14 +85,16 @@ wss.on('connection', (ws) => {
   // Update the user count, given a new connection
   sendUserCount();
 
+  // When receiving a message from a client, deal with it based on data type of the message
   ws.on('message', function incoming(event) {
     let data = JSON.parse(event);
-    // Check the data type and switch based on it
     switch(data.type) {
+      // a postMessage is a new chat message string from a user
       case "postMessage":
         let receivedMessage = JSON.parse(event);
         console.log("Received a message: ");
         console.log(receivedMessage);
+        // Use sendMessage() to prepare a new outgoing chat message
         let preparedMessage = JSON.stringify(sendMessage(receivedMessage));
         // Broast the new message to all clients
         wss.clients.forEach(function each(client) {
@@ -89,12 +103,14 @@ wss.on('connection', (ws) => {
           }
         });
         break;
+      // a postNotification is a user changing their display name
       case "postNotification":
         let receivedNotification = JSON.parse(event);
         console.log("Received a notification: ");
         console.log(receivedNotification);
+        // Use sendNotification() to prepare a new outgoing user name notification
         let preparedNotification = JSON.stringify(sendNotification(receivedNotification));
-        // Broast the new message to all clients
+        // Broadcast the new message to all clients
         wss.clients.forEach(function each(client) {
           if (client.readyState === WebSocket.OPEN) {
             client.send(preparedNotification);
@@ -107,10 +123,10 @@ wss.on('connection', (ws) => {
     }
   });
 
-  // Set up a callback for when a client closes the socket. This usually means they closed their browser.
+  // When a client closes the socket, calls sendUserCount to reflect one less user
   ws.on('close', () => {
     console.log('Client disconnected');
-    //Update the user count, given a closed connection
+    // Update the user count, given a closed connection
     sendUserCount();
   });
 });
