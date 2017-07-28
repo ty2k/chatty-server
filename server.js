@@ -5,6 +5,7 @@
 //    Server Settings    //
 ///////////////////////////
 
+
 const express = require('express');
 const WebSocket = require('ws');
 const SocketServer = WebSocket.Server;
@@ -29,7 +30,7 @@ const wss = new SocketServer({ server });
 const uuidv4 = require('uuid/v4');
 
 // Takes an incoming message from a client, prepare to send to all clients with new id
-const sendMessage = function(message) {
+const prepareMessage = function(message) {
   let returnMessage = {
     type: "incomingMessage",
     id: uuidv4(),
@@ -42,7 +43,7 @@ const sendMessage = function(message) {
 };
 
 // Takes a postNotification username change message from a client, prepare to send to all clients
-const sendNotification = function(notification) {
+const prepareNotification = function(notification) {
   let returnNotification = {
     type: "incomingNotification",
     id: uuidv4(),
@@ -94,8 +95,8 @@ wss.on('connection', (ws) => {
         let receivedMessage = JSON.parse(event);
         console.log("Received a message: ");
         console.log(receivedMessage);
-        // Use sendMessage() to prepare a new outgoing chat message
-        let preparedMessage = JSON.stringify(sendMessage(receivedMessage));
+        // Use prepareMessage() to prepare a new outgoing chat message
+        let preparedMessage = JSON.stringify(prepareMessage(receivedMessage));
         // Broast the new message to all clients
         wss.clients.forEach(function each(client) {
           if (client.readyState === WebSocket.OPEN) {
@@ -108,8 +109,8 @@ wss.on('connection', (ws) => {
         let receivedNotification = JSON.parse(event);
         console.log("Received a notification: ");
         console.log(receivedNotification);
-        // Use sendNotification() to prepare a new outgoing user name notification
-        let preparedNotification = JSON.stringify(sendNotification(receivedNotification));
+        // Use prepareNotification() to prepare a new outgoing user name notification
+        let preparedNotification = JSON.stringify(prepareNotification(receivedNotification));
         // Broadcast the new message to all clients
         wss.clients.forEach(function each(client) {
           if (client.readyState === WebSocket.OPEN) {
