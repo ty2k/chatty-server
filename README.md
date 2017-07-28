@@ -1,6 +1,6 @@
 # chatty-server
 
-This is a WebSockets server for my related [chatty-app client](https://github.com/ty2k/chatty-app), using Node and Express. Both project are coursework from [Lighthouse Labs](https://github.com/lighthouse-labs).
+This is a WebSockets server to handle clients from my related ReactJS [chatty-app client](https://github.com/ty2k/chatty-app), using Node and Express. Both projects are coursework from [Lighthouse Labs](https://github.com/lighthouse-labs).
 
 ## Install
 
@@ -8,7 +8,7 @@ This is a WebSockets server for my related [chatty-app client](https://github.co
 
 ## Run
 
-`node server.js`
+`npm start`
 
 ## Notes
 
@@ -17,7 +17,8 @@ chatty-app server uses port 3001, [chatty-app client](https://github.com/ty2k/ch
 ## Dependencies
 
 - Node
-- "express": "4.15.3",
+- "express": "4.15.3"
+- "uuid": "3.1.0"
 - "ws": "3.0.0"
 
 ## Contact the Author
