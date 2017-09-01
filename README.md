@@ -16,10 +16,9 @@ chatty-app server uses port 3001, [chatty-app client](https://github.com/ty2k/ch
 
 ## Dependencies
 
-- Node
-- "express": "4.15.3"
-- "uuid": "3.1.0"
-- "ws": "3.0.0"
+- [Express](https://www.npmjs.com/package/express) as a web server
+- [ws](https://www.npmjs.com/package/ws) as a WebSocket server
+- [uuid](https://www.npmjs.com/package/uuid) for unique message IDs
 
 ## Contact the Author
 
