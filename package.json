@@ -1,6 +1,6 @@
 {
   "name": "chatty-server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "WebSocket server to go along with my chatty-app React client",
   "main": "index.js",
   "scripts": {
@@ -14,8 +14,8 @@
   "author": "Tyler Krys",
   "license": "ISC",
   "dependencies": {
-    "express": "4.16.4",
+    "express": "4.17.1",
     "uuid": "3.3.2",
-    "ws": "6.1.2"
+    "ws": "7.0.0"
   }
 }
