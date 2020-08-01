@@ -9,14 +9,14 @@ const server = express()
 const wss = new SocketServer({ server });
 
 // Helper functions
-const prepareMessage = require('./scripts/prepare-message').prepareMessage;
-const prepareNotification = require('./scripts/prepare-notification').prepareNotification;
-const getUserCount = require('./scripts/get-user-count').getUserCount;
+const prepareMessage = require('./scripts/prepare-message');
+const prepareNotification = require('./scripts/prepare-notification');
+const getUserCount = require('./scripts/get-user-count');
 
 // WebSocket connection handler
 wss.on('connection', (ws) => {
   console.log('Client connected');
-  const sendUserCount = function (count) {
+  function sendUserCount() {
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(getUserCount(wss.clients.size)));
