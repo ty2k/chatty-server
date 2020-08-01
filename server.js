@@ -5,11 +5,10 @@ const SocketServer = WebSocket.Server;
 const PORT = 3001;
 const server = express()
   .use(express.static('public'))
-  .listen(PORT, '0.0.0.0', 'localhost', () => console.log(`Listening on ${ PORT }`));
+  .listen(PORT, '0.0.0.0', 'localhost', () => console.log(`Listening on ${PORT}`));
 const wss = new SocketServer({ server });
 
 // Helper functions
-const uuidv4 = require('uuid/v4');
 const prepareMessage = require('./scripts/prepare-message').prepareMessage;
 const prepareNotification = require('./scripts/prepare-notification').prepareNotification;
 const getUserCount = require('./scripts/get-user-count').getUserCount;
@@ -17,7 +16,7 @@ const getUserCount = require('./scripts/get-user-count').getUserCount;
 // WebSocket connection handler
 wss.on('connection', (ws) => {
   console.log('Client connected');
-  const sendUserCount = function(count) {
+  const sendUserCount = function (count) {
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(getUserCount(wss.clients.size)));
@@ -29,7 +28,7 @@ wss.on('connection', (ws) => {
   // Handle messages from clients based on message type
   ws.on('message', function incoming(event) {
     const data = JSON.parse(event);
-    switch(data.type) {
+    switch (data.type) {
       // postMessage is a new chat message string from a user
       case "postMessage":
         const receivedMessage = JSON.parse(event);

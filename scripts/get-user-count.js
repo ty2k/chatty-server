@@ -1,7 +1,8 @@
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
+
 module.exports = {
   // Create a latestUserCount message to send upon client socket open or close
-  getUserCount: function(count) {
+  getUserCount: function (count) {
     const latestUserCount = {
       type: "userCountUpdate",
       id: uuidv4(),
